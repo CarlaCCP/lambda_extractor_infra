@@ -15,10 +15,10 @@ resource "aws_lambda_function" "extractor" {
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
   filename      = "lambda_function_payload.zip"
-  function_name = "lambda_loja_authorizer"
+  function_name = "extractor"
   role          = "arn:aws:iam::339712924021:role/LabRole"
   handler       = "app.lambda_handler"
-  layers        = [aws_lambda_layer_version.jwt.arn] 
+  layers        = [aws_lambda_layer_version.ffmpeg.arn] 
 
   source_code_hash = data.archive_file.lambda.output_base64sha256
 
