@@ -5,7 +5,7 @@ data "archive_file" "lambda" {
 }
 
 resource "aws_lambda_layer_version" "ffmpeg" {
-  filename   = "bin.zip"
+  filename   = "python.zip"
   layer_name = "ffmpeg"
 
   compatible_runtimes = ["python3.9"]
