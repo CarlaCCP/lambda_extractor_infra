@@ -11,6 +11,13 @@ resource "aws_lambda_layer_version" "ffmpeg" {
   compatible_runtimes = ["python3.9"]
 }
 
+resource "aws_lambda_layer_version" "bin" {
+  filename   = "bin.zip"
+  layer_name = "bin"
+
+  compatible_runtimes = ["python3.9"]
+}
+
 resource "aws_lambda_function" "extractor" {
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
@@ -18,7 +25,7 @@ resource "aws_lambda_function" "extractor" {
   function_name = "extractor"
   role          = "arn:aws:iam::339712924021:role/LabRole"
   handler       = "handler.lambda_handler"
-  layers        = [aws_lambda_layer_version.ffmpeg.arn] 
+  layers        = [aws_lambda_layer_version.ffmpeg.arn, aws_lambda_layer_version.bin.arn] 
 
   source_code_hash = data.archive_file.lambda.output_base64sha256
 
