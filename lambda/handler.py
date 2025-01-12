@@ -5,6 +5,8 @@ import zipfile
 import ffmpeg
 
 s3 = boto3.client('s3')
+FFMPEG_PATH = '/opt/ffmpeg/ffmpeg'
+os.environ['PATH'] = FFMPEG_PATH + ':' + os.environ['PATH']
 
 def lambda_handler(event, context):
     # TODO implement
