@@ -1,8 +1,8 @@
 import json
 import boto3
 import os
-import subprocess
 import zipfile
+import ffmpeg
 
 s3 = boto3.client('s3')
 
@@ -20,17 +20,15 @@ def lambda_handler(event, context):
     local_output_file = '/tmp'
     zip_file_path = '/tmp/arquivo_convertido.zip'
 
-    ffmpeg_path = '/bin/ffmpeg'
-
     # Processo completo
     download_file_from_s3(bucket_name, s3_file_key, local_input_file)  # Passo 1: Baixar arquivo
-    process_video(local_input_file, local_output_file, ffmpeg_path)  # Passo 2: Processar com FFmpeg
+    process_video(local_input_file, local_output_file)  # Passo 2: Processar com FFmpeg
     zip_file(local_output_file, zip_file_path)  # Passo 3: Compactar em ZIP
     upload_file_to_s3(bucket_name, zip_file_path, "123/imagens.zip")  # Passo 4: Enviar para o S3
 
     # Limpar arquivos temporários
     os.remove(local_input_file)
-    os.remove(local_output_file)
+    # os.remove(local_output_file)
     os.remove(zip_file_path)
     return {
         'statusCode': 200,
@@ -38,14 +36,12 @@ def lambda_handler(event, context):
     }
 
 
-
 def download_file_from_s3(bucket_name, s3_file_key, local_input_file):
     s3.download_file(bucket_name, s3_file_key, local_input_file)
     print(f"Arquivo {s3_file_key} baixado para {local_input_file}")
 
-def process_video(imput_file, output_file, ffmpeg_path):
-    command = f"{ffmpeg_path} -i {imput_file} -vf fps=1 {output_file}/frame-%03d.png"
-    subprocess.run(command, shell=True)
+def process_video(imput_file, output_file):
+    ffmpeg.input(imput_file).output(f'{output_file}%04d.png', vf=f'fps={1}').run()
     print(f"Vídeo processado e salvo em {output_file}")
 
 def zip_file(output_file, zip_file_path):
