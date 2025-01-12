@@ -17,7 +17,7 @@ resource "aws_lambda_function" "extractor" {
   filename      = "lambda_function_payload.zip"
   function_name = "extractor"
   role          = "arn:aws:iam::339712924021:role/LabRole"
-  handler       = "app.lambda_handler"
+  handler       = "handler.lambda_handler"
   layers        = [aws_lambda_layer_version.ffmpeg.arn] 
 
   source_code_hash = data.archive_file.lambda.output_base64sha256
