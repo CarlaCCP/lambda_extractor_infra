@@ -5,15 +5,8 @@ data "archive_file" "lambda" {
 }
 
 resource "aws_lambda_layer_version" "ffmpeg" {
-  filename   = "python.zip"
+  filename   = "layer.zip"
   layer_name = "ffmpeg"
-
-  compatible_runtimes = ["python3.9"]
-}
-
-resource "aws_lambda_layer_version" "bin" {
-  filename   = "bin.zip"
-  layer_name = "bin"
 
   compatible_runtimes = ["python3.9"]
 }
@@ -25,11 +18,12 @@ resource "aws_lambda_function" "extractor" {
   function_name = "extractor"
   role          = "arn:aws:iam::339712924021:role/LabRole"
   handler       = "handler.lambda_handler"
-  layers        = [aws_lambda_layer_version.ffmpeg.arn, aws_lambda_layer_version.bin.arn] 
+  layers        = [aws_lambda_layer_version.ffmpeg.arn] 
 
   source_code_hash = data.archive_file.lambda.output_base64sha256
 
   runtime = "python3.9"
+  timeout = 600
 
   environment {
     variables = {
