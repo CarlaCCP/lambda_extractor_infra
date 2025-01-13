@@ -1,7 +1,6 @@
 import json
 import boto3
 import os
-import zipfile
 import subprocess
 import shutil
 
@@ -25,7 +24,10 @@ def lambda_handler(event, context):
     if not os.path.exists(local_output_file):
         os.makedirs(local_output_file)
 
-    zip_file_path = '/tmp/arquivo_convertido'
+    zip_file_path = '/tmp/compactado'
+
+    if not os.path.exists(zip_file_path):
+        os.makedirs(zip_file_path)
 
     # Processo completo
     download_file_from_s3(bucket_name, s3_file_key, local_input_file)  # Passo 1: Baixar arquivo
@@ -34,9 +36,9 @@ def lambda_handler(event, context):
     upload_file_to_s3(bucket_name, zip_file_path, "123/imagens.zip")  # Passo 4: Enviar para o S3
 
     # Limpar arquivos temporários
-    os.remove(local_input_file)
+    # os.remove(local_input_file)
     # os.remove(local_output_file)
-    os.remove(zip_file_path)
+    # os.remove(zip_file_path)
     return {
         'statusCode': 200,
         'body': json.dumps('Hello from Lambda!')
@@ -54,9 +56,18 @@ def process_video(imput_file, output_file):
     print(f"Vídeo processado e salvo em {output_file}")
 
 def zip_file(output_file, zip_file_path):
-    shutil.make_archive(zip_file_path, 'zip', output_file)
+    shutil.make_archive(f"{zip_file_path}/arquivo_convertido", 'zip', output_file)
     print(f"Arquivo zipado e salvo em {zip_file_path}")
 
 def upload_file_to_s3(bucket_name, zip_file_path, s3_file_key):
-    s3.upload_file(f"{zip_file_path}.zip", bucket_name, s3_file_key)
+    s3.upload_file(f"{zip_file_path}/arquivo_convertido.zip", bucket_name, s3_file_key)
     print(f"Arquivo {zip_file_path} enviado para {s3_file_key}")
+
+
+
+# input
+# s3_dir
+# s3_filename
+
+# Output
+# s3_file_key
