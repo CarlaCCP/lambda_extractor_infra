@@ -13,10 +13,12 @@ resource "aws_lambda_layer_version" "ffmpeg" {
 
 resource "aws_sqs_queue" "create_frames" {
   name = "create-frames-queue"
+  visibility_timeout_seconds = 600
 }
 
 resource "aws_sqs_queue" "update_frames" {
   name = "update-frames-queue"
+  visibility_timeout_seconds = 600
 }
 
 resource "aws_lambda_function" "extractor" {
