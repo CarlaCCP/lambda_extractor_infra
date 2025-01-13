@@ -15,6 +15,10 @@ resource "aws_sqs_queue" "create_frames" {
   name = "create-frames-queue"
 }
 
+resource "aws_sqs_queue" "update_frames" {
+  name = "update-frames-queue"
+}
+
 resource "aws_lambda_function" "extractor" {
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
