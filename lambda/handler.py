@@ -16,9 +16,13 @@ def lambda_handler(event, context):
     print(context)
     print("Iniciando processamento")
 
+    ##variaveis do evento
+    filename = event.get("uploadFilename")
+    id = event.get("id")
+
   
     bucket_name = 'storage-image-extractor'
-    s3_file_key = '123/teste_video.mov'
+    s3_file_key = f'{id}/{filename}'
 
     local_input_file = '/tmp/teste_video.mov'
     local_output_file = '/tmp/frames'
@@ -37,10 +41,10 @@ def lambda_handler(event, context):
 
 
     # Processo completo
-    #download_file_from_s3(bucket_name, s3_file_key, local_input_file)  # Passo 1: Baixar arquivo
-    #process_video(local_input_file, local_output_file)  # Passo 2: Processar com FFmpeg
-    #zip_file(local_output_file, zip_file_path)  # Passo 3: Compactar em ZIP
-    #upload_file_to_s3(bucket_name, zip_file_path, "123/imagens.zip")  # Passo 4: Enviar para o S3
+    download_file_from_s3(bucket_name, s3_file_key, local_input_file)  # Passo 1: Baixar arquivo
+    process_video(local_input_file, local_output_file)  # Passo 2: Processar com FFmpeg
+    zip_file(local_output_file, zip_file_path)  # Passo 3: Compactar em ZIP
+    upload_file_to_s3(bucket_name, zip_file_path, "123/imagens.zip")  # Passo 4: Enviar para o S3
     send_message_to_sqs(queue_url, json.dumps(message_body))  # Passo 5: Enviar mensagem para a fila SQS
 
     # Limpar arquivos temporários
