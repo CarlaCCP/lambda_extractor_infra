@@ -3,6 +3,7 @@ import boto3
 import os
 import subprocess
 import shutil
+import json
 
 s3 = boto3.client('s3')
 sqs = boto3.client('sqs')
@@ -17,8 +18,10 @@ def lambda_handler(event, context):
     print("Iniciando processamento")
 
     ##variaveis do evento
-    filename = event.get("uploadFilename")
-    id = event.get("id")
+    event_obj = json.loads(event['Records'][0]['body'])
+    filename = event_obj.get("uploadFilename")
+    id = event_obj.get("id")
+ 
 
   
     bucket_name = 'storage-image-extractor'
@@ -44,7 +47,7 @@ def lambda_handler(event, context):
     download_file_from_s3(bucket_name, s3_file_key, local_input_file)  # Passo 1: Baixar arquivo
     process_video(local_input_file, local_output_file)  # Passo 2: Processar com FFmpeg
     zip_file(local_output_file, zip_file_path)  # Passo 3: Compactar em ZIP
-    upload_file_to_s3(bucket_name, zip_file_path, "123/imagens.zip")  # Passo 4: Enviar para o S3
+    upload_file_to_s3(bucket_name, zip_file_path, f"{id}/imagens.zip")  # Passo 4: Enviar para o S3
     send_message_to_sqs(queue_url, json.dumps(message_body))  # Passo 5: Enviar mensagem para a fila SQS
 
     # Limpar arquivos temporários
@@ -76,6 +79,8 @@ def upload_file_to_s3(bucket_name, zip_file_path, s3_file_key):
     print(f"Arquivo {zip_file_path} enviado para {s3_file_key}")
 
 def send_message_to_sqs(queue_url, message_body):
+    ##ajustar, está causando erro
+    message_body = {"uploadFilename": "imagens.zip"}
     response = sqs.send_message(
         QueueUrl=queue_url,
         MessageBody=message_body
