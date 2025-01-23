@@ -27,7 +27,7 @@ def lambda_handler(event, context):
     bucket_name = 'storage-image-extractor'
     s3_file_key = f'{id}/{filename}'
 
-    local_input_file = '/tmp/teste_video.mov'
+    local_input_file = f'/tmp/{filename}'
     local_output_file = '/tmp/frames'
 
     if not os.path.exists(local_output_file):
