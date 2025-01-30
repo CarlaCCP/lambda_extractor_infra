@@ -26,7 +26,7 @@ resource "aws_lambda_function" "extractor" {
   # path.module in the filename.
   filename      = "lambda_function_payload.zip"
   function_name = "extractor"
-  role          = "arn:aws:iam::339712924021:role/LabRole"
+  role          = "arn:aws:iam::118934669452:role/LabRole"
   handler       = "handler.lambda_handler"
   layers        = [aws_lambda_layer_version.ffmpeg.arn] 
 
