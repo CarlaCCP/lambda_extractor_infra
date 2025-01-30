@@ -41,10 +41,11 @@ def lambda_handler(event, context):
             os.makedirs(zip_file_path)
 
         #frames prontos
-        frames = f"{id}/imagens.zip"
+        frames = f"{id}/{filename}-frames.zip"
         #Variaveis sqs
         queue_url = 'update-frames-queue'
         message_body = {"id": id, "downloadFilename": frames, }
+        message_body_error = {"id": id, "downloadFilename": 'null', "error": "error"}
 
         # Processo completo
         download_file_from_s3(bucket_name, s3_file_key, local_input_file)  # Passo 1: Baixar arquivo
@@ -63,6 +64,7 @@ def lambda_handler(event, context):
         }
     except Exception as e:
         send_message_failer("Não foi possível concluir seu download, tente mais tarde")
+        send_message_to_sqs(queue_url, json.dumps(message_body_error))
 
 
 def download_file_from_s3(bucket_name, s3_file_key, local_input_file):
@@ -98,10 +100,3 @@ def send_message_failer(message):
         Subject='Erro no download'
     )
     print(f"Mensagem de erro enviada: {response}")
-
-# input
-# s3_dir
-# s3_filename
-
-# Output
-# s3_file_key
